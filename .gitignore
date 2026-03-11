@@ -1,0 +1,20 @@
+# Python virtual environments
+venv/
+.venv/
+env/
+ENV/
+virtual-env/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# training outputs (optional)
+results/
+videos/
+
+# OS files
+.DS_Store

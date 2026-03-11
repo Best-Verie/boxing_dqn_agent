@@ -1,0 +1,10 @@
+stable-baselines3[extra]
+gymnasium[atari,accept-rom-license]
+ale-py
+torch
+numpy
+pandas
+matplotlib
+tensorboard
+jupyter
+opencv-python
