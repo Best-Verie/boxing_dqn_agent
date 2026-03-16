@@ -1,4 +1,4 @@
-# DQN Atari Assignment - Tennis (Raissa)
+# DQN Atari Assignment - Tennis 
 
 ## Environment
 - Gymnasium Atari environment: `ALE/Tennis-v5`
