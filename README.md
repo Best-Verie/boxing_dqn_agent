@@ -1,15 +1,18 @@
 # DQN Atari Assignment - Boxing 
 
-
-
-Group 3 Members:
+## Group 3 Members:
 
 Elyse Marie Uyiringiye
 Nice Eva
 Best Verie Iradukunda
 Raissa Irutingabo
 
-Best Model Playing: (paset the Best model video here )
+## Model Files/Videos 
+
+[!https://drive.google.com/drive/folders/18KEPQ7AlXoZxDiDu8lFAwod63G7g-8rQ?usp=sharing]
+## Best Model Playing: 
+### (paste the Best model link video here )
+
 
 ## Overview
 
