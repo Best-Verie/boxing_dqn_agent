@@ -1,5 +1,21 @@
 # DQN Atari Assignment - Boxing 
 
+
+
+Group 3 Members:
+
+Elyse Marie Uyiringiye
+Nice Eva
+Best Verie Iradukunda
+Raissa Irutingabo
+
+Best Model Playing: (paset the Best model video here )
+
+## Overview
+
+This project implements a Deep Q-Network (DQN) agent trained to play the Atari Boxing-v5 environment using Stable Baselines3 and Gymnasium. This requires training and comparing multiple DQN configurations with different hyperparameters and policy architectures (CNNPolicy vs MLPPolicy).
+
+
 ## Environment
 - Gymnasium Atari environment: `ALE/Tennis-v5`
 - Framework: Stable-Baselines3 `DQN`
@@ -7,6 +23,61 @@
 ## Scripts
 - `scripts/train.py`: trains different DQN experiments  and saves model artifacts
 - `scripts/play.py`: loads trained best model and runs evaluation gameplay
+
+
+## Key Libraries
+
+stable-baselines3 (≥2.3.2): DQN algorithm and policy implementations
+gymnasium[atari] (≥1.0.0): Atari environment wrapper
+ale-py (≥0.10.1): Atari Learning Environment interface
+torch: Neural network backend
+pandas, matplotlib: Data analysis and visualization
+
+## Install dependencies
+pip install -r requirements.txt
+
+### On some systems, may need to install ROMs separately
+AutoROM --accept-license
+
+# Group Members Contribution
+
+## Best Verie Experiments
+
+## Best Verie's Experiment Summary (11 experiments)
+
+9 CNN experiments and 2 MLP experiments.
+
+| Experiment | Policy | Mean Reward | Std Reward | Train Time (min) | Notes |
+|-----------|--------|------------|------------|------------------|------|
+| boxing_exp01_baseline_cnn | CnnPolicy | **5.9** | 5.50 | 14.23 |  Best overall |
+| boxing_exp05_high_gamma_cnn | CnnPolicy | 4.7 | 3.66 | 14.11 | Higher gamma |
+| boxing_exp08_less_exploration_cnn | CnnPolicy | 4.1 | 4.50 | 14.36 | Less exploration |
+| boxing_exp02_small_batch_cnn | CnnPolicy | 3.8 | 5.27 | 13.62 | Smaller batch |
+| boxing_exp04_low_gamma_cnn | CnnPolicy | 1.2 | 3.91 | 14.08 | Lower gamma |
+| boxing_exp06_gamma_zero_cnn | CnnPolicy | -0.3 | 6.33 | 14.16 | No future reward |
+| boxing_exp03_large_batch_cnn | CnnPolicy | -0.6 | 3.29 | 14.75 | Large batch |
+| boxing_exp07_more_exploration_cnn | CnnPolicy | -0.7 | 5.08 | 13.96 | More exploration |
+| boxing_exp09_more_updates_cnn | CnnPolicy | -1.3 | 4.27 | 19.49 | More gradient steps |
+| boxing_exp11_small_batch_mlp | MlpPolicy | -14.4 | 5.64 | 7.04 | MLP policy |
+| boxing_exp10_baseline_mlp | MlpPolicy | -27.3 | 4.47 | 7.18 | Worst performance |
+
+
+##  Best Model
+
+The best-performing model is:boxing_exp01_baseline_cnn with mean reward of 5.9
+Files:
+## Key files
+
+experiments/BestVerie_experiments.ipynb: Full training pipeline with callbacks and visualization
+Hyperparameter_tables/BestVerie_hyperparameter_results.csv: Summary results table
+results/BestVerie.zip: logs,models, everything related to the training process
+Video Demonstration:
+
+## Demo
+
+[![Watch my play demo](https://via.placeholder.com/800x400?text=Watch+Boxing+AI+Demo)](!https://drive.google.com/file/d/14716OGsd0Bl2DVU9waerE_U_6jVZnpA7/view?usp=sharing)
+
+
 
 ## Raissa Experiments (10 Configurations)
 The notebook used is:
@@ -52,15 +123,7 @@ Fill after runs:
 
 ## Colab + Google Drive Export
 The notebook includes export logic that copies key artifacts to:
-- `/content/drive/MyDrive/Tenis_dqn_agent/raissa`
+- `/content/drive/MyDrive/Boxing_dqn_agent/raissa`
 
 So you can access the model and results table even after Colab runtime disconnects.
 
-## Suggested Run Order (Notebook)
-1. Cell 1: Setup + Drive mount
-2. Cell 2: Utilities
-3. Cell 3: Experiment definitions
-4. Cell 4: Training runs (10 configs)
-5. Cell 5: Save result tables
-6. Cell 6: Visual comparison
-7. Cell 7: Export artifacts and optional gameplay recording
