@@ -30,34 +30,100 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecMoni
 
 
 class EpisodeCSVLogger(BaseCallback):
-    def __init__(self, csv_path: str, verbose: int = 0):
+    def __init__(self, csv_path: str, progress_every: int = 5000, verbose: int = 0):
         super().__init__(verbose)
         self.csv_path = csv_path
+        self.progress_every = max(1, int(progress_every))
         self.rows = []
+        self._last_progress_t = 0
+        self._last_episode_reward = None
+        self._last_episode_length = None
+
+    def _on_training_start(self) -> None:
+        self._last_progress_t = 0
 
     def _on_step(self) -> bool:
+        saw_episode = False
         for info in self.locals.get("infos", []):
             if "episode" in info:
                 ep = info["episode"]
+                self._last_episode_length = ep["l"]
+                self._last_episode_reward = ep["r"]
+                saw_episode = True
                 self.rows.append(
                     {
                         "timestep": self.num_timesteps,
                         "ep_length": ep["l"],
                         "ep_reward": ep["r"],
                         "time": round(time.time(), 2),
+                        "row_type": "episode_end",
                     }
                 )
+
+        # Add heartbeat points for long episodes so plotting never looks empty.
+        if (not saw_episode) and (self.num_timesteps - self._last_progress_t) >= self.progress_every:
+            self._last_progress_t = self.num_timesteps
+            self.rows.append(
+                {
+                    "timestep": self.num_timesteps,
+                    "ep_length": self._last_episode_length,
+                    "ep_reward": self._last_episode_reward,
+                    "time": round(time.time(), 2),
+                    "row_type": "progress",
+                }
+            )
         return True
 
     def _on_training_end(self) -> None:
+        if not self.rows:
+            # Keep at least one row so downstream plotting logic has a file to read.
+            self.rows.append(
+                {
+                    "timestep": self.num_timesteps,
+                    "ep_length": self._last_episode_length,
+                    "ep_reward": self._last_episode_reward,
+                    "time": round(time.time(), 2),
+                    "row_type": "summary",
+                }
+            )
         os.makedirs(os.path.dirname(self.csv_path), exist_ok=True)
         with open(self.csv_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(
                 f,
-                fieldnames=["timestep", "ep_length", "ep_reward", "time"],
+                fieldnames=["timestep", "ep_length", "ep_reward", "time", "row_type"],
             )
             writer.writeheader()
             writer.writerows(self.rows)
+
+
+def append_eval_summary_row(csv_path: Path, timestep: int, mean_reward: float) -> None:
+    default_fields = ["timestep", "ep_length", "ep_reward", "time", "row_type"]
+    row = {
+        "timestep": int(timestep),
+        "ep_length": "",
+        "ep_reward": float(mean_reward),
+        "time": round(time.time(), 2),
+        "row_type": "eval_summary",
+    }
+
+    fieldnames = list(default_fields)
+    if csv_path.exists() and csv_path.stat().st_size > 0:
+        try:
+            with open(csv_path, "r", newline="", encoding="utf-8") as f:
+                reader = csv.reader(f)
+                existing_header = next(reader, [])
+                if existing_header:
+                    fieldnames = existing_header
+        except Exception:
+            fieldnames = list(default_fields)
+
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    needs_header = (not csv_path.exists()) or csv_path.stat().st_size == 0
+    with open(csv_path, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        if needs_header:
+            writer.writeheader()
+        writer.writerow(row)
 
 
 def make_cnn_env(env_id: str, seed: int, render_mode=None):
@@ -73,12 +139,43 @@ def make_cnn_env(env_id: str, seed: int, render_mode=None):
 
 
 def make_mlp_env(env_id: str, seed: int, render_mode=None):
-    ram_env_id = env_id.replace("-v5", "-ram-v5")
-    env = gym.make(ram_env_id, render_mode=render_mode)
-    env = Monitor(env)
-    env = DummyVecEnv([lambda: env])
-    env = VecMonitor(env)
-    return env
+    candidate_ids = list(
+        dict.fromkeys(
+            [
+                env_id,
+                env_id.replace("-v5", "-ram-v5"),
+                "ALE/Tennis-ram-v5",
+                "Tennis-ram-v5",
+            ]
+        )
+    )
+
+    last_err = None
+    for ram_env_id in candidate_ids:
+        try:
+            env = DummyVecEnv(
+                [
+                    lambda ram_env_id=ram_env_id, render_mode=render_mode: Monitor(
+                        gym.make(
+                            ram_env_id,
+                            obs_type="ram",
+                            frameskip=4,
+                            repeat_action_probability=0.0,
+                            render_mode=render_mode,
+                        )
+                    )
+                ]
+            )
+            env.seed(seed)
+            env = VecMonitor(env)
+            return env
+        except Exception as err:
+            last_err = err
+
+    raise RuntimeError(
+        "Could not create a RAM Atari env for MlpPolicy. "
+        f"Tried ids={candidate_ids}. Last error: {last_err}"
+    ) from last_err
 
 
 def parse_args():
@@ -103,6 +200,7 @@ def parse_args():
     parser.add_argument("--exploration-fraction", type=float, default=0.10)
     parser.add_argument("--eval-freq", type=int, default=10_000)
     parser.add_argument("--eval-episodes", type=int, default=5)
+    parser.add_argument("--log-progress-every", type=int, default=5000)
     return parser.parse_args()
 
 
@@ -161,7 +259,10 @@ def main():
         eval_env = make_mlp_env(args.env_id, seed=args.seed + 100)
         final_eval_env = make_mlp_env(args.env_id, seed=args.seed + 200)
 
-    episode_logger = EpisodeCSVLogger(str(training_csv_path))
+    episode_logger = EpisodeCSVLogger(
+        str(training_csv_path),
+        progress_every=args.log_progress_every,
+    )
     eval_callback = EvalCallback(
         eval_env,
         best_model_save_path=str(best_model_dir),
@@ -211,6 +312,9 @@ def main():
         n_eval_episodes=args.eval_episodes,
         deterministic=True,
     )
+
+    # Ensure each experiment has at least one numeric reward point for plotting.
+    append_eval_summary_row(training_csv_path, args.total_timesteps, float(mean_reward))
 
     eval_summary = {
         "member": args.member,

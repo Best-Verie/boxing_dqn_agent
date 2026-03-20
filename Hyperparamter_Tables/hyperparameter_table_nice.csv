@@ -1,0 +1,13 @@
+Member Name,Hyperparameter Set,Noted Behavior
+Nice,"lr=2.5e-4, gamma=0.95, batch=64, eps_start=1.0, eps_end=0.02, eps_fraction=0.20",[Exp 1 - Baseline] Moderate config — stable reference point. Mean reward: -0.20
+Nice,"lr=2.5e-4, gamma=0.95, batch=64, eps_start=1.0, eps_end=0.0, eps_fraction=0.20",[Exp 2 - Zero Eps End] Fully greedy at end. Best performer. Mean reward: +4.40
+Nice,"lr=2.5e-4, gamma=0.0, batch=64, eps_start=1.0, eps_end=0.02, eps_fraction=0.20",[Exp 3 - Zero Gamma] Fully myopic agent ignores future rewards. Mean reward: -2.80
+Nice,"lr=1e-3, gamma=0.95, batch=64, eps_start=1.0, eps_end=0.02, eps_fraction=0.20",[Exp 4 - Very High LR] Aggressive updates cause unstable Q-values. Mean reward: -24.80
+Nice,"lr=1e-6, gamma=0.95, batch=64, eps_start=1.0, eps_end=0.02, eps_fraction=0.20","[Exp 5 - Tiny LR] Near-zero updates, agent barely learns. Mean reward: -11.80"
+Nice,"lr=2.5e-4, gamma=0.999, batch=256, eps_start=1.0, eps_end=0.02, eps_fraction=0.20",[Exp 6 - Large Batch + High Gamma] Stable gradients with strong future valuation. Mean reward: +0.40
+Nice,"lr=2.5e-4, gamma=0.95, batch=64, eps_start=1.0, eps_end=0.02, eps_fraction=0.01",[Exp 7 - Instant Exploit] Epsilon collapses in first 1% of training. Mean reward: +2.00
+Nice,"lr=2.5e-4, gamma=0.95, batch=64, eps_start=1.0, eps_end=0.02, eps_fraction=0.90","[Exp 8 - Full Explore] Explores for 90% of training, slow to exploit. Mean reward: 0.00"
+Nice,"lr=2.5e-4, gamma=0.99, batch=64, eps_start=1.0, eps_end=0.01, eps_fraction=0.15",[Exp 9 - Best Guess] Balanced config targeting highest reward. Mean reward: +1.00
+Nice,"lr=2.5e-4, gamma=0.99, batch=64, eps_start=1.0, eps_end=0.0, eps_fraction=0.20",[Exp 11 - Zero Eps + High Gamma] Greedy convergence with strong future valuation. Mean reward: -0.20
+Nice,"lr=2.5e-4, gamma=0.95, batch=128, eps_start=1.0, eps_end=0.0, eps_fraction=0.20",[Exp 12 - Zero Eps + Large Batch] Larger batch stabilises gradients with greedy end. Mean reward: -0.40
+Nice,"lr=5e-4, gamma=0.99, batch=64, eps_start=1.0, eps_end=0.0, eps_fraction=0.15",[Exp 13 - Tuned LR + Zero Eps] Slightly higher LR with zero eps and high gamma. Mean reward: -20.20
