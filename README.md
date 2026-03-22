@@ -133,3 +133,60 @@ The notebook includes export logic that copies key artifacts to:
 
 So you can access the model and results table even after Colab runtime disconnects.
 
+## MarieAElyse — ALE/Boxing-v5
+
+### Environment
+| Property | Value |
+|----------|-------|
+| Environment | `ALE/Boxing-v5` |
+| Action Space | `Discrete(18)` |
+| Observation Space | `Box(0, 255, (210, 160, 3), uint8)` |
+| Algorithm | DQN + CnnPolicy |
+| Total Timesteps | 100,000 per experiment |
+
+---
+
+### Hyperparameter Table
+
+| Member | Hyperparameter Set | Noted Behavior |
+|--------|-------------------|----------------|
+| Elyse | lr=1e-4, gamma=0.99, batch=32, epsilon_start=1.0, epsilon_end=0.05, epsilon_decay=0.10 | [Exp 1 - Baseline] Stable training. Reward improves steadily. Agent learns to land punches over time. Reference point for all other experiments. Mean Reward: 3.8 |
+| Elyse | lr=5e-4, gamma=0.99, batch=32, epsilon_start=1.0, epsilon_end=0.05, epsilon_decay=0.10 | [Exp 2 - High LR] Q-values diverge catastrophically. Training loss spikes. lr=5e-4 is too aggressive — worst experiment. Mean Reward: -41.0 |
+| Elyse | lr=1e-5, gamma=0.99, batch=32, epsilon_start=1.0, epsilon_end=0.05, epsilon_decay=0.10 | [Exp 3 - Low LR] Very slow convergence. Agent still near-random at midpoint. Rewards far below baseline. Mean Reward: -4.4 |
+| Elyse | lr=1e-4, gamma=0.90, batch=32, epsilon_start=1.0, epsilon_end=0.05, epsilon_decay=0.10 | [Exp 4 - Low Gamma] Agent is myopic — ignores long-term scoring. Rewards plateau lower than baseline. Mean Reward: 1.4 |
+| Elyse | lr=1e-4, gamma=0.999, batch=32, epsilon_start=1.0, epsilon_end=0.05, epsilon_decay=0.10 | [Exp 5 - High Gamma] Agent values long-term strategy. Slightly slower early learning but more deliberate play. Mean Reward: 3.4 |
+| Elyse | lr=1e-4, gamma=0.99, batch=128, epsilon_start=1.0, epsilon_end=0.05, epsilon_decay=0.10 | [Exp 6 - Large Batch] Smoother loss curve but fewer updates per timestep. Final performance below baseline. Mean Reward: -1.2 |
+| Elyse | lr=1e-4, gamma=0.99, batch=16, epsilon_start=1.0, epsilon_end=0.05, epsilon_decay=0.10 | [Exp 7 - Small Batch] Noisy gradients but frequent updates. Surprisingly good performance. Mean Reward: 7.4 |
+| Elyse | lr=1e-4, gamma=0.99, batch=32, epsilon_start=1.0, epsilon_end=0.10, epsilon_decay=0.50 | [Exp 8 - Slow Epsilon Decay] Extended exploration fills replay buffer with diverse transitions. Mean Reward: 3.4 |
+| Elyse | lr=1e-4, gamma=0.99, batch=32, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.05 | [Exp 9 - Fast Epsilon Decay] Commits to exploitation early. Best result — Boxing is simple enough that fast exploitation beats extended exploration. **Mean Reward: 11.2 ✅ Best** |
+| Elyse | lr=1e-4, gamma=0.99, batch=32, epsilon_start=1.0, epsilon_end=0.05, epsilon_decay=0.10 [MlpPolicy] | [Exp 10 - MLP Ablation] Same hyperparameters as Exp 1, only policy differs. Cannot extract spatial features. 37-point gap vs CNN confirms CnnPolicy is essential. Mean Reward: -33.2 |
+
+---
+
+### Best Model — exp09_fast_eps
+
+| Metric | Value |
+|--------|-------|
+| Mean Reward (training eval) | 11.2 ± 6.76 |
+| Mean Reward (live play) | 8.6 ± 1.85 |
+| Win Rate | 5W / 0D / 0L (100%) |
+| Best Episode | 11.0 |
+| Worst Episode | 6.0 |
+
+---
+
+### Key Insights
+
+- **Best config:** `exp09_fast_eps` — fast epsilon decay (5% of steps) worked best for Boxing because the environment is simple enough to benefit from early exploitation
+- **Worst config:** `exp02_high_lr` — lr=5e-4 caused Q-value divergence, scoring -41.0
+- **CNN vs MLP:** CnnPolicy scored 3.8 vs MlpPolicy -33.2 with identical hyperparameters — a 37-point gap proving CNN is essential for pixel-based Atari
+- **Surprise finding:** Fast epsilon decay outperformed slow decay, contrary to theory — Boxing's dense reward signal allows the agent to learn a good policy quickly
+
+---
+
+### Gameplay Video
+
+>  [Watch the agent play Boxing](videos/boxing_gameplay.avi)
+
+Agent uses **GreedyQPolicy** (`exploration_rate=0.0` → always picks `argmax Q(s,a)`).
+
