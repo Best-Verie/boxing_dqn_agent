@@ -77,12 +77,8 @@ Files:
 experiments/BestVerie_experiments.ipynb: Full training pipeline with callbacks and visualization
 Hyperparameter_tables/BestVerie_hyperparameter_results.csv: Summary results table
 results/BestVerie.zip: logs,models, everything related to the training process
-Video Demonstration:
 
-## Demo
-
-[![Watch my play demo](https://via.placeholder.com/800x400?text=Watch+Boxing+AI+Demo)](!https://drive.google.com/file/d/14716OGsd0Bl2DVU9waerE_U_6jVZnpA7/view?usp=sharing)
-
+## Raissa IRUTINAGBO's experiments results
 
 
 Raissa Experiments (10 Configurations)Notebook used: experiments/irutingabo-experiments.ipynbThis section defines 10 experiment configurations arranged as 5 paired CNN/MLP groups — each pair shares identical hyperparameters so that CnnPolicy and MlpPolicy can be compared fairly under the same conditions.CSV Results: results/raissa/tables/raissa_hyperparameter_results.csvMarkdown Results: results/raissa/tables/raissa_hyperparameter_results.md
