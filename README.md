@@ -48,10 +48,8 @@ pandas, matplotlib: Data analysis and visualization
 
 ## Best Verie Experiments
 
-# Boxing DQN Experiments (ALE/Boxing-v5)
 
-
-## Best Verie's Experiment Summary (11 experiments)
+## Best Verie Iradukunda's Experiment Summary (11 experiments)
 
 | Experiment | Policy | Mean Reward | Std Reward | Train Time (min) | Notes |
 |-----------|--------|------------|------------|------------------|------|
@@ -71,12 +69,14 @@ pandas, matplotlib: Data analysis and visualization
 ##  Best Model
 
 The best-performing model is:boxing_exp01_baseline_cnn with mean reward of 5.9
-Files:
+
+The baseline CNN model outperformed others because it used balanced default hyperparameters that ensured stable learning. With only 100,000 timesteps, modified settings like high gamma or altered exploration failed to converge. The CNN also captured spatial features effectively, making it more robust than other configurations, especially under limited training conditions.
 ## Key files
 
-experiments/BestVerie_experiments.ipynb: Full training pipeline with callbacks and visualization
-Hyperparameter_tables/BestVerie_hyperparameter_results.csv: Summary results table
-results/BestVerie.zip: logs,models, everything related to the training process
+###  experiments/BestVerie_experiments.ipynb: Full training pipeline with callbacks and visualization
+
+- Hyperparameter_tables/BestVerie_hyperparameter_results.csv: Summary results table
+- In drive link: /BestVerie.zip: logs,models, everything related to the training process
 
 ## Raissa IRUTINAGBO's experiments results
 
