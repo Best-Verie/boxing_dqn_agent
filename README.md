@@ -73,11 +73,11 @@ The best-performing model is:boxing_exp01_baseline_cnn with mean reward of 5.9
 The baseline CNN model outperformed others because it used balanced default hyperparameters that ensured stable learning. With only 100,000 timesteps, modified settings like high gamma or altered exploration failed to converge. The CNN also captured spatial features effectively, making it more robust than other configurations, especially under limited training conditions.
 ## Key files
 
-###  experiments/BestVerie_experiments.ipynb: Full training pipeline with callbacks and visualization
-
+- experiments/BestVerie_experiments.ipynb: Full training pipeline with callbacks and visualization
 - Hyperparameter_tables/BestVerie_hyperparameter_results.csv: Summary results table
 - In drive link: /BestVerie.zip: logs,models, everything related to the training process
 
+#### (My  model play )[!https://drive.google.com/file/d/14716OGsd0Bl2DVU9waerE_U_6jVZnpA7/view?usp=sharing]
 ## Raissa IRUTINAGBO's experiments results
 
 
