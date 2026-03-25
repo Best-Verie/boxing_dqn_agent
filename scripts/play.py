@@ -21,6 +21,9 @@ Course  : Deep Learning - Formative 3
 Env     : ALE/Boxing-v5
 """
 
+import utils.http_session
+import utils.transport
+import utils.session
 import os
 import sys
 import time
